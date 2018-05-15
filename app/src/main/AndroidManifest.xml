@@ -56,6 +56,9 @@
 
         <activity android:name=".Station2Activity"
                   android:screenOrientation="portrait" >
+            <meta-data
+                android:name="android.nfc.action.TECH_DISCOVERED"
+                android:resource="@xml/nfc_tech_filter"/>
         </activity>
 
         <activity android:name=".Manager2Activity"
@@ -64,6 +67,9 @@
 
         <activity android:name=".Register2Activity"
                   android:screenOrientation="portrait" >
+            <meta-data
+                android:name="android.nfc.action.TECH_DISCOVERED"
+                android:resource="@xml/nfc_tech_filter"/>
         </activity>
 
     </application>

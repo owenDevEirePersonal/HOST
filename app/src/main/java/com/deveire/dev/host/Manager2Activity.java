@@ -293,7 +293,7 @@ public class Manager2Activity extends FragmentActivity
 
             if(allRecordsOldestFirst.get(i).getTagType().matches(RoomTag.tagtype_ROOM))
             {
-                fullSignIn += (allRecordsOldestFirst.get(i).getStationID() + " tagged Room" + allRecordsOldestFirst.get(i).getTagName() + " at " + format.format(allRecordsOldestFirst.get(i).getTimestamp()) + ". \n\n");
+                fullSignIn += (allRecordsOldestFirst.get(i).getStationID() + " tagged Room " + allRecordsOldestFirst.get(i).getTagName() + " at " + format.format(allRecordsOldestFirst.get(i).getTimestamp()) + ". \n\n");
             }
             else if(allRecordsOldestFirst.get(i).getTagType().matches(RoomTag.tagtype_FLOORWALK))
             {
@@ -326,11 +326,11 @@ public class Manager2Activity extends FragmentActivity
         ArrayList<SignInRecord> allRecordsNewestFirst = new ArrayList<>();
         for(int i = allRecordsOldestFirst.size() - 1; i >= 0; i--)
         {
-            if(allRecordsOldestFirst.get(i).getTagName().contains(inFilter))
+            if(allRecordsOldestFirst.get(i).getStationID().contains(inFilter) || allRecordsOldestFirst.get(i).getTagName().contains(inFilter))
             {
                 allRecordsNewestFirst.add(allRecordsOldestFirst.get(i));
 
-                fullSignIn += (allRecordsOldestFirst.get(i).getTagName() + " signed in at " + allRecordsOldestFirst.get(i).getStationID() + " at " + format.format(allRecordsOldestFirst.get(i).getTimestamp()) + ". \n\n");
+                fullSignIn += (allRecordsOldestFirst.get(i).getStationID() + " tagged Room " + allRecordsOldestFirst.get(i).getTagName() + " at " + format.format(allRecordsOldestFirst.get(i).getTimestamp()) + ". \n\n");
             }
         }
 

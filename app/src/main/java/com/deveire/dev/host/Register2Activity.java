@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.nfc.NfcAdapter;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.support.v4.app.FragmentActivity;
@@ -16,6 +15,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.deveire.dev.host.data.AlertData;
 import com.deveire.dev.host.data.RoomTag;
@@ -62,6 +62,8 @@ public class Register2Activity extends FragmentActivity
     private String currentStationID;
     //[/Retreive Alert Data Variables]
 
+    private NfcAdapter nfcAdapt;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -107,6 +109,8 @@ public class Register2Activity extends FragmentActivity
         pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         wl = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "activity_register_host tag");
         wl.acquire();
+
+        nfcAdapt = NfcScanner.setupNfcScanner(this);
     }
 
 
@@ -116,14 +120,21 @@ public class Register2Activity extends FragmentActivity
         super.onResume();
         hasState = true;
 
-        handleNfcIntent(getIntent());
-
         if(!wl.isHeld())
         {
             wl.acquire();
         }
 
-
+        nfcAdapt = NfcScanner.setupNfcScanner(this);
+        if(nfcAdapt == null)
+        {
+            Toast.makeText(this, "Please turn on NFC scanner before continuing", Toast.LENGTH_LONG).show();
+            finish();
+        }
+        else
+        {
+            NfcScanner.setupForegroundDispatch(this, nfcAdapt);
+        }
     }
 
     @Override
@@ -133,6 +144,15 @@ public class Register2Activity extends FragmentActivity
         hasState = false;
 
         super.onPause();
+
+        if(nfcAdapt == null)
+        {
+            Toast.makeText(this, "Please turn on NFC scanner before continuing", Toast.LENGTH_LONG).show();
+        }
+        else
+        {
+            NfcScanner.stopForegroundDispatch(this, nfcAdapt);
+        }
         //finish();
     }
 
@@ -157,71 +177,14 @@ public class Register2Activity extends FragmentActivity
     }
 
     //[NFC CODE]
-    private void handleNfcIntent(Intent nfcIntent) {
-
-        Log.i("NFC", "handleNfcIntent");
-        Tag atag = nfcIntent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-        if(atag != null)
-        {
-            Log.i("NFC", "atag id = " + bytesToHexString(atag.getId()));
-        }
-        else
-        {
-            Log.i("NFC", "atag is null");
-        }
-        /*ArrayList<String> messagesReceivedArray = new ArrayList<>();
-
-        if(nfcAdapter.ACTION_TAG_DISCOVERED.equals(NfcIntent.getAction()))
-        {
-            Log.i("NFC", "ACTION_TAG_DISCOVERED");
-        }
-
-        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(NfcIntent.getAction())) {
-            Parcelable[] receivedArray =
-                    NfcIntent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-
-            if(receivedArray != null) {
-                messagesReceivedArray.clear();
-                NdefMessage receivedMessage = (NdefMessage) receivedArray[0];
-                NdefRecord[] attachedRecords = receivedMessage.getRecords();
-
-                for (NdefRecord record:attachedRecords) {
-                    String string = new String(record.getPayload());
-                    //Make sure we don't pass along our AAR (Android Application Record)
-                    if (string.equals(getPackageName())) { continue; }
-                    messagesReceivedArray.add(string);
-                }
-                Toast.makeText(this, "Received " + messagesReceivedArray.size() +
-                        " Messages", Toast.LENGTH_LONG).show();
-                Log.i("NFC", "Received + " + messagesReceivedArray.size() + " messages: \n" + messagesReceivedArray);
-            }
-            else {
-                Log.i("NFC", "Blank Parcel: \n" + messagesReceivedArray);
-                Toast.makeText(this, "Received Blank Parcel", Toast.LENGTH_LONG).show();
-            }
-        }*/
-    }
-
-    private String bytesToHexString(byte[] src) {
-        StringBuilder stringBuilder = new StringBuilder("0x");
-        if (src == null || src.length <= 0) {
-            return null;
-        }
-
-        char[] buffer = new char[2];
-        for (int i = 0; i < src.length; i++) {
-            buffer[0] = Character.forDigit((src[i] >>> 4) & 0x0F, 16);
-            buffer[1] = Character.forDigit(src[i] & 0x0F, 16);
-            System.out.println(buffer);
-            stringBuilder.append(buffer);
-        }
-
-        return stringBuilder.toString();
-    }
-
     @Override
-    public void onNewIntent(Intent intent) {
-        handleNfcIntent(intent);
+    public void onNewIntent(Intent intent)
+    {
+        String tagRead = NfcScanner.getTagIDFromIntent(intent);
+        if(tagRead != null)
+        {
+            tagIDEditText.setText(tagRead);
+        }
     }
     //[END OF NFC CODE]
 

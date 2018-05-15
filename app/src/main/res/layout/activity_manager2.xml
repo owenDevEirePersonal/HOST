@@ -95,13 +95,13 @@
                     style="@style/Widget.AppCompat.Button.Colored"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="48dp"
                     android:background="@drawable/rounded_button"
-                    android:text="Mark as Alerts as Done"
+                    android:text="Mark all Alerts as Done"
                     android:textColor="@android:color/white"
                     map:layout_constraintHorizontal_bias="0.0"
                     map:layout_constraintLeft_toLeftOf="@+id/addJanitorAlertButton"
                     map:layout_constraintRight_toRightOf="@+id/addJanitorAlertButton"
-                    android:layout_marginTop="48dp"
                     map:layout_constraintTop_toBottomOf="@+id/addSecurityAlertButton"/>
 
                 <Button

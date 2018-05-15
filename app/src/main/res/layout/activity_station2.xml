@@ -175,9 +175,26 @@
         android:text="I'm still not done yet"
         android:textColor="@android:color/white"
         map:layout_constraintBottom_toBottomOf="parent"
-        map:layout_constraintHorizontal_bias="0.502"
+        map:layout_constraintHorizontal_bias="0.9"
         map:layout_constraintLeft_toLeftOf="parent"
         map:layout_constraintRight_toRightOf="parent"/>
+
+    <Button
+        android:id="@+id/jobConfirmedFinishedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/rounded_button"
+        android:text="Confirm"
+        android:textColor="@android:color/white"
+        map:layout_constraintBottom_toBottomOf="parent"
+        map:layout_constraintHorizontal_bias="0.4"
+        map:layout_constraintLeft_toLeftOf="parent"
+        map:layout_constraintRight_toLeftOf="@+id/jobFinishedButton"/>
 
     <Button
         android:id="@+id/driver2Button"

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.nfc.NfcAdapter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -18,6 +19,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.deveire.dev.host.data.AlertData;
 import com.deveire.dev.host.data.RoomTag;
@@ -65,7 +67,8 @@ public class Station2Activity extends Activity implements RecognitionListener
     private ImageView inProgressImage;
     private ImageView jobFinishedImage;
     private ImageView leakInfoImage;
-    private Button jobFinishedButton;
+    private Button jobNotFinishedButton;
+    private Button jobConfirmedFinishedButton;
 
     final static int PAIR_READER_REQUESTCODE = 9;
 
@@ -112,6 +115,8 @@ public class Station2Activity extends Activity implements RecognitionListener
     PowerManager.WakeLock wl;
 
     private int scriptLine;
+
+    private NfcAdapter nfcAdapt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -195,8 +200,11 @@ public class Station2Activity extends Activity implements RecognitionListener
         jobFinishedImage.setImageResource(R.drawable.jobsfinished2);
         jobFinishedImage.setVisibility(View.INVISIBLE);
 
-        jobFinishedButton = (Button) findViewById(R.id.jobFinishedButton);
-        jobFinishedButton.setVisibility(View.INVISIBLE);
+        jobNotFinishedButton = (Button) findViewById(R.id.jobFinishedButton);
+        jobNotFinishedButton.setVisibility(View.INVISIBLE);
+
+        jobConfirmedFinishedButton = (Button) findViewById(R.id.jobConfirmedFinishedButton);
+        jobConfirmedFinishedButton.setVisibility(View.INVISIBLE);
 
         stopJobFinishedTimer = new Timer();
         //[End of Job Finished correction setup]
@@ -231,6 +239,8 @@ public class Station2Activity extends Activity implements RecognitionListener
         stopLeakInfoTimer = new Timer();
         stopInProgressTimer = new Timer();
         stopJobFinishedTimer = new Timer();
+
+        nfcAdapt = NfcScanner.setupNfcScanner(this);
     }
 
     @Override
@@ -249,6 +259,17 @@ public class Station2Activity extends Activity implements RecognitionListener
         if(!wl.isHeld())
         {
             wl.acquire();
+        }
+
+        nfcAdapt = NfcScanner.setupNfcScanner(this);
+        if(nfcAdapt == null)
+        {
+            Toast.makeText(this, "Please turn on NFC scanner before continuing", Toast.LENGTH_LONG).show();
+            finish();
+        }
+        else
+        {
+            NfcScanner.setupForegroundDispatch(this, nfcAdapt);
         }
     }
 
@@ -289,6 +310,15 @@ public class Station2Activity extends Activity implements RecognitionListener
         stopLeakInfoTimer.cancel();
         stopLeakInfoTimer.purge();
 
+        if(nfcAdapt == null)
+        {
+            Toast.makeText(this, "Please turn on NFC scanner before continuing", Toast.LENGTH_LONG).show();
+        }
+        else
+        {
+            NfcScanner.stopForegroundDispatch(this, nfcAdapt);
+        }
+
         super.onPause();
     }
 
@@ -303,6 +333,15 @@ public class Station2Activity extends Activity implements RecognitionListener
         super.onStop();
     }
 
+    @Override
+    protected void onNewIntent(Intent intent)
+    {
+        String tagRead = NfcScanner.getTagIDFromIntent(intent);
+        if(tagRead != null)
+        {
+            swipeActionHandler(tagRead);
+        }
+    }
 
     //[Offline loading]
     private void retrieveData()
@@ -1088,7 +1127,8 @@ public class Station2Activity extends Activity implements RecognitionListener
             {
                 inProgressImage.setVisibility(View.INVISIBLE);
                 jobFinishedImage.setVisibility(View.INVISIBLE);
-                jobFinishedButton.setVisibility(View.INVISIBLE);
+                jobNotFinishedButton.setVisibility(View.INVISIBLE);
+                jobConfirmedFinishedButton.setVisibility(View.INVISIBLE);
                 adImageView.setVisibility(View.VISIBLE);
             }
         });
@@ -1103,7 +1143,8 @@ public class Station2Activity extends Activity implements RecognitionListener
             {
                 adImageView.setVisibility(View.INVISIBLE);
                 jobFinishedImage.setVisibility(View.INVISIBLE);
-                jobFinishedButton.setVisibility(View.INVISIBLE);
+                jobNotFinishedButton.setVisibility(View.INVISIBLE);
+                jobConfirmedFinishedButton.setVisibility(View.INVISIBLE);
                 inProgressImage.setVisibility(View.VISIBLE);
             }
         });
@@ -1127,14 +1168,32 @@ public class Station2Activity extends Activity implements RecognitionListener
     {
         adImageView.setVisibility(View.INVISIBLE);
         jobFinishedImage.setVisibility(View.VISIBLE);
-        jobFinishedButton.setVisibility(View.VISIBLE);
-        jobFinishedButton.setOnClickListener(new View.OnClickListener()
+        jobNotFinishedButton.setVisibility(View.VISIBLE);
+        jobNotFinishedButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
                 displayingJobFinished = false;
+                stopJobFinishedTimer.purge();
+                stopJobFinishedTimer.cancel();
                 displayAdImage();
+
+            }
+        });
+        jobConfirmedFinishedButton.setVisibility(View.VISIBLE);
+        jobConfirmedFinishedButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                displayingJobFinished = false;
+                stopJobFinishedTimer.purge();
+                stopJobFinishedTimer.cancel();
+                currentTag.setIsBeingCleaned(false);
+                saveData();
+                displayAdImage();
+
             }
         });
         inProgressImage.setVisibility(View.INVISIBLE);
