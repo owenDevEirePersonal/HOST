@@ -11,6 +11,7 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -22,6 +23,8 @@ import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -35,6 +38,10 @@ public class Manager2Activity extends FragmentActivity
 
     private EditText stationIDText;
     private EditText alertTextText;
+    private EditText reciepientText;
+    private EditText earliestDateText;
+    private EditText latestDateText;
+    private CheckBox isPrioritisedCheckBox;
     private Button addCleanupAlertButton;
     private Button addSecurityAlertButton;
     private Button registerButton;
@@ -71,6 +78,7 @@ public class Manager2Activity extends FragmentActivity
     private String fullSignIn;
     ArrayList<SignInRecord> current3LatestSignins;
 
+
     @Override
     protected void onCreate(final Bundle savedInstanceState)
     {
@@ -89,6 +97,18 @@ public class Manager2Activity extends FragmentActivity
         clearSigninsButton = (Button) findViewById(R.id.clearSigninsButton);
         stationIDText = (EditText) findViewById(R.id.stationIDEditText);
         alertTextText = (EditText) findViewById(R.id.alertTextEditText);
+        reciepientText = (EditText) findViewById(R.id.userEditText);
+        earliestDateText = (EditText) findViewById(R.id.earliestValidDateEditText);
+        latestDateText = (EditText) findViewById(R.id.latestValidDateEditText);
+        isPrioritisedCheckBox = (CheckBox) findViewById(R.id.isPriorityCheckBox);
+
+        final DateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+        Calendar cal = Calendar.getInstance();
+        final Date earlyDefault = cal.getTime();
+        earliestDateText.setText(format.format(earlyDefault));
+        cal.add(Calendar.DATE, 1);
+        final Date lateDefault = cal.getTime();
+        latestDateText.setText(format.format(lateDefault));
 
         addSecurityAlertButton.setOnClickListener(new View.OnClickListener()
         {
@@ -100,6 +120,10 @@ public class Manager2Activity extends FragmentActivity
                     uploadAlert(RoomTag.tagtype_FLOORWALK);
                     stationIDText.setText("");
                     alertTextText.setText("");
+                    reciepientText.setText("");
+                    earliestDateText.setText(format.format(earlyDefault));
+                    latestDateText.setText(format.format(lateDefault));
+                    isPrioritisedCheckBox.setChecked(false);
                 }
             }
         });
@@ -114,6 +138,10 @@ public class Manager2Activity extends FragmentActivity
                     uploadAlert(RoomTag.tagtype_ROOM);
                     stationIDText.setText("");
                     alertTextText.setText("");
+                    reciepientText.setText("");
+                    earliestDateText.setText(format.format(earlyDefault));
+                    latestDateText.setText(format.format(lateDefault));
+                    isPrioritisedCheckBox.setChecked(false);
                 }
             }
         });
@@ -263,7 +291,7 @@ public class Manager2Activity extends FragmentActivity
     private void uploadAlert(String alertType)
     {
         allAlerts = retrieveAlerts(savedData);
-        allAlerts.add(new AlertData(stationIDText.getText().toString(), alertTextText.getText().toString(), true, alertType));
+        allAlerts.add(new AlertData(stationIDText.getText().toString(), alertTextText.getText().toString(), true, alertType, isPrioritisedCheckBox.isChecked(), reciepientText.getText().toString(), earliestDateText.getText().toString(), latestDateText.getText().toString()));
         saveAlertData(savedData, allAlerts);
     }
 

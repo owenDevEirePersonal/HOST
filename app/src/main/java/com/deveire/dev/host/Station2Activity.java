@@ -108,7 +108,7 @@ public class Station2Activity extends Activity implements RecognitionListener
     private TextView alertDataText;
     private TextView instructionsDataText;
     private String currentUID;
-    private String currentStationID;
+    private String currentEmployeeID;
     //[/Retreive Alert Data Variables]
 
     PowerManager pm;
@@ -117,6 +117,10 @@ public class Station2Activity extends Activity implements RecognitionListener
     private int scriptLine;
 
     private NfcAdapter nfcAdapt;
+
+    private Timer getPriorityAlertTimer;
+    private boolean isShowingPriorityAlerts;
+    private boolean isSafeToShowPriorityAlerts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -132,15 +136,15 @@ public class Station2Activity extends Activity implements RecognitionListener
         nameEditText = (EditText) findViewById(R.id.nameEditText);
 
         adImageView = (ImageView) findViewById(R.id.addImageView);
-        adImageView.setImageResource(R.drawable.drinkaware_ad);
+        adImageView.setImageResource(R.drawable.hostlogo);
         adImageView.setVisibility(View.VISIBLE);
 
         instructionsDataText = (TextView) findViewById(R.id.kegDataText);
         alertDataText = (TextView) findViewById(R.id.alertDataText);
 
         currentUID = "";
-        currentStationID = "Gordon Freeman";
-        nameEditText.setText(currentStationID);
+        currentEmployeeID = "Gordon Freeman";
+        nameEditText.setText(currentEmployeeID);
 
 
         //+++[Ad Swapping Setup]
@@ -160,10 +164,7 @@ public class Station2Activity extends Activity implements RecognitionListener
                         Log.i("Ad Update", "Changing ad");
                         switch (currentAdIndex)
                         {
-                            case 1: adImageView.setImageResource(R.drawable.drinkaware_awareness_1); currentAdIndex++; break;
-                            case 2: adImageView.setImageResource(R.drawable.report_ad); currentAdIndex++; break;
-                            case 3: adImageView.setImageResource(R.drawable.stock_ad); currentAdIndex++; break;
-                            case 4: adImageView.setImageResource(R.drawable.menu_ad); currentAdIndex = 1; break;
+                            case 1: adImageView.setImageResource(R.drawable.hostlogo); currentAdIndex = 1; break;
                         }
                     }
                 });
@@ -241,6 +242,13 @@ public class Station2Activity extends Activity implements RecognitionListener
         stopJobFinishedTimer = new Timer();
 
         nfcAdapt = NfcScanner.setupNfcScanner(this);
+
+        //[Priority Alert Setup]
+        isShowingPriorityAlerts = false;
+        isSafeToShowPriorityAlerts = true;
+        startScanningForPriorityAlerts();
+        //[End of Priority Alert Setup]
+
     }
 
     @Override
@@ -255,6 +263,8 @@ public class Station2Activity extends Activity implements RecognitionListener
         hasSufferedAtLeastOneFailureToReadUID = true;
         tileReaderTimer = new Timer();
         connectToTileScanner();*/
+
+        //TODO: Fix timers not being reset on resume
 
         if(!wl.isHeld())
         {
@@ -309,6 +319,9 @@ public class Station2Activity extends Activity implements RecognitionListener
 
         stopLeakInfoTimer.cancel();
         stopLeakInfoTimer.purge();
+
+        getPriorityAlertTimer.cancel();
+        getPriorityAlertTimer.purge();
 
         if(nfcAdapt == null)
         {
@@ -376,6 +389,7 @@ public class Station2Activity extends Activity implements RecognitionListener
     private void speakAlerts(RoomTag tag)
     {
         boolean hasNewAlerts = false;
+        Calendar cal = Calendar.getInstance();
         String alertSpeechString = "You have new alerts: . . . ";
         String alertTextString = "You have new alerts: \n\n";
         for (AlertData anAlert: allAlerts)
@@ -384,18 +398,21 @@ public class Station2Activity extends Activity implements RecognitionListener
             {
                 if(tag.getType().matches(RoomTag.tagtype_ROOM))
                 {
-                    if(anAlert.getStationID().matches(tag.getName()))
+                    if(anAlert.getStationID().matches(tag.getName()) && (cal.getTime().after(anAlert.getEarliestValidDate()) && cal.getTime().before(anAlert.getLatestValidDate())) )
                     {
-                        hasNewAlerts = true;
-                        alertSpeechString += anAlert.getAlertText() + ". . . ";
-                        alertTextString += anAlert.getAlertText() + "\n\n";
-                        anAlert.setActive(false);
+                        if(anAlert.getRecipientName().matches("") || anAlert.getRecipientName().matches(currentEmployeeID))
+                        {
+                            hasNewAlerts = true;
+                            alertSpeechString += anAlert.getAlertText() + ". . . . . . . . . ";
+                            alertTextString += anAlert.getAlertText() + "\n\n";
+                            anAlert.setActive(false);
+                        }
                     }
                 }
                 else if(tag.getType().matches(RoomTag.tagtype_FLOORWALK))
                 {
                     hasNewAlerts = true;
-                    alertSpeechString += anAlert.getAlertText() + ". . . ";
+                    alertSpeechString += anAlert.getAlertText() + ". . . . . . . . . ";
                     alertTextString += anAlert.getAlertText() + "\n\n";
                     anAlert.setActive(false);
                 }
@@ -417,27 +434,38 @@ public class Station2Activity extends Activity implements RecognitionListener
 
     private void swipeActionHandler(String tagIDin)
     {
-        allTags = retrieveTags(savedData);
-
-
-        RoomTag tag = findTagFromID(tagIDin, allTags);
-        if(tag != null)
+        if(!isShowingPriorityAlerts)
         {
-            currentTag = tag;
-        }
-        else
-        {
-            currentTag = new RoomTag("Unknown Card with ID: " + tagIDin, tagIDin, RoomTag.tagtype_UNDEFINED_TAG);
-        }
-        Calendar aCal = Calendar.getInstance();
-        allSignIns.add(new SignInRecord(currentStationID, currentTag.serializeTag(), aCal.getTime()));
-        saveData();
+            isSafeToShowPriorityAlerts = false;
 
-        switch (currentTag.getType())
-        {
-            case RoomTag.tagtype_ROOM: handleRoomSwipe(currentTag); break;
-            case RoomTag.tagtype_FLOORWALK: handleFloorWalkSwipe(currentTag); break;
-            default: Log.e("Swipe", "ERROR: UNIDENTIFIED CARD TYPE"); break;
+            allTags = retrieveTags(savedData);
+            currentEmployeeID = nameEditText.getText().toString();
+
+            RoomTag tag = findTagFromID(tagIDin, allTags);
+            if (tag != null)
+            {
+                currentTag = tag;
+            }
+            else
+            {
+                currentTag = new RoomTag("Unknown Card with ID: " + tagIDin, tagIDin, RoomTag.tagtype_UNDEFINED_TAG);
+            }
+            Calendar aCal = Calendar.getInstance();
+            allSignIns.add(new SignInRecord(currentEmployeeID, currentTag.serializeTag(), aCal.getTime()));
+            saveData();
+
+            switch (currentTag.getType())
+            {
+                case RoomTag.tagtype_ROOM:
+                    handleRoomSwipe(currentTag);
+                    break;
+                case RoomTag.tagtype_FLOORWALK:
+                    handleFloorWalkSwipe(currentTag);
+                    break;
+                default:
+                    Log.e("Swipe", "ERROR: UNIDENTIFIED CARD TYPE");
+                    break;
+            }
         }
     }
 
@@ -507,8 +535,8 @@ public class Station2Activity extends Activity implements RecognitionListener
 
     private void speakSecurityInstructions(RoomTag tag)
     {
-        String alertSpeechString = currentStationID + " checking in at " + tag.getName() + " during floor walk. . ";
-        String alertTextString = "\n" + currentStationID +  " checking in at " + tag.getName() + " during floor walk.\n--------------------------------------------------------\n";
+        String alertSpeechString = currentEmployeeID + " checking in at " + tag.getName() + " during floor walk. . ";
+        String alertTextString = "\n" + currentEmployeeID +  " checking in at " + tag.getName() + " during floor walk.\n--------------------------------------------------------\n";
         /*alertSpeechString += " 1. Is the bathroom clean?" + " . ";
         alertTextString += "\n1. Is the bathroom clean?\n";
         alertSpeechString += " 2. Is the water running?" + " . ";
@@ -636,6 +664,11 @@ public class Station2Activity extends Activity implements RecognitionListener
                         }
                         else if(utteranceId.matches("EndOfTechnicianClass1Instructions"))
                         {
+                            displayAdImage();
+                        }
+                        else if(utteranceId.matches("EndOfPriorityAlerts"))
+                        {
+                            isShowingPriorityAlerts = false;
                             displayAdImage();
                         }
                         else if(utteranceId.matches("EndOfRoomInstructions"))
@@ -1130,6 +1163,8 @@ public class Station2Activity extends Activity implements RecognitionListener
                 jobNotFinishedButton.setVisibility(View.INVISIBLE);
                 jobConfirmedFinishedButton.setVisibility(View.INVISIBLE);
                 adImageView.setVisibility(View.VISIBLE);
+
+                isSafeToShowPriorityAlerts = true;
             }
         });
     }
@@ -1213,6 +1248,87 @@ public class Station2Activity extends Activity implements RecognitionListener
                 }
             }
         }, 15000); //after 15 seconds, revert to ads.
+    }
+
+    private void startScanningForPriorityAlerts()
+    {
+
+
+        if(getPriorityAlertTimer != null)
+        {
+            getPriorityAlertTimer.purge();
+            getPriorityAlertTimer.cancel();
+        }
+
+        getPriorityAlertTimer = new Timer();
+
+        getPriorityAlertTimer.schedule(new TimerTask()
+        {
+            @Override
+            public void run()
+            {
+                Log.i("Alerts", "scanning For Priority Alerts");
+                retrieveAlerts(savedData);
+                if(isSafeToShowPriorityAlerts)
+                {
+                    speakPriorityAlerts();
+                }
+            }
+        }, 5000, 30000);
+
+    }
+
+    private void speakPriorityAlerts()
+    {
+        isShowingPriorityAlerts = true;
+        boolean hasNewAlerts = false;
+        Calendar cal = Calendar.getInstance();
+        String alertSpeechString = "You have new Priority alerts: . . . ";
+        String alertTextString = "You have new Priority alerts: \n\n";
+        for (AlertData anAlert: allAlerts)
+        {
+            if(anAlert.isActive() && anAlert.isPriority() && (anAlert.getRecipientName().matches("") || anAlert.getRecipientName().matches(currentEmployeeID)))
+            {
+                hasNewAlerts = true;
+                if(anAlert.getType().matches(RoomTag.tagtype_ROOM))
+                {
+                    alertSpeechString += anAlert.getAlertText() + " in Room " + anAlert.getStationID() + ". . . . . . . . . ";
+                    alertTextString += anAlert.getAlertText()  + " in Room " + anAlert.getStationID() + "\n\n";
+                }
+                if(anAlert.getType().matches(RoomTag.tagtype_FLOORWALK))
+                {
+                    alertSpeechString += anAlert.getAlertText() + " at " + anAlert.getStationID() + ". . . . . . . . . ";
+                    alertTextString += anAlert.getAlertText()  + " at " + anAlert.getStationID() + "\n\n";
+                }
+                anAlert.setActive(false);
+            }
+        }
+
+        saveData();
+
+        final String finalAlertSpeechString = alertSpeechString;
+        final String finalAlertTextString = alertTextString;
+        if(hasNewAlerts)
+        {
+            runOnUiThread(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    adImageView.setVisibility(View.INVISIBLE);
+                    alertDataText.setText(finalAlertTextString);
+                    instructionsDataText.setText("");
+                    toSpeech.speak(finalAlertSpeechString, TextToSpeech.QUEUE_FLUSH, null, "EndOfPriorityAlerts");
+                }
+            });
+
+        }
+        else
+        {
+            isShowingPriorityAlerts = false;
+        }
+
+
     }
     //[End of Misc Methods]
 }
