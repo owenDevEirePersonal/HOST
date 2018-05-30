@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/party_app_final_background"
+    tools:context="com.deveire.dev.host.NfcWriterActivity">
+
+    <TextView
+        android:id="@+id/spinnerPlacementFixer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="29dp"
+        android:textColor="@android:color/white"
+        app:layout_constraintRight_toLeftOf="@+id/textView1"
+        app:layout_constraintTop_toBottomOf="@+id/idEditText"/>
+
+    <TextView
+        android:id="@+id/textView16"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="15dp"
+        android:text="Location ID:"
+        android:textColor="@android:color/white"
+        app:layout_constraintLeft_toLeftOf="@+id/textView14"
+        app:layout_constraintTop_toBottomOf="@+id/textView14"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintVertical_bias="0.00999999"/>
+
+    <TextView
+        android:id="@+id/typeText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="0dp"
+        android:textColor="@android:color/white"
+        app:layout_constraintLeft_toRightOf="@+id/textView16"
+        app:layout_constraintTop_toTopOf="@+id/textView16"/>
+
+    <Spinner
+        android:id="@+id/typeSpinner"
+        style="@style/AppSpinnerTheme"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="23dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/spinner_background"
+        android:contextClickable="true"
+        android:elevation="24dp"
+        android:overlapAnchor="false"
+        android:spinnerMode="dropdown"
+        android:theme="@style/Widget.AppCompat.Light.DropDownItem.Spinner"
+        app:layout_constraintRight_toRightOf="@+id/idEditText"
+        app:layout_constraintTop_toBottomOf="@+id/textView1"
+        app:layout_constraintLeft_toRightOf="@+id/spinnerPlacementFixer"
+        android:layout_marginLeft="8dp"/>
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="31dp"
+        android:text="Location Type"
+        android:textColor="@android:color/white"
+        app:layout_constraintLeft_toLeftOf="@+id/idEditText"
+        app:layout_constraintTop_toBottomOf="@+id/idEditText"/>
+
+    <EditText
+        android:id="@+id/idEditText"
+        style="@style/EditTextTheme"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:textColor="@android:color/white"
+        app:layout_constraintHorizontal_bias="0.503"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView6"/>
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="8dp"
+        android:text="Location ID"
+        android:textColor="@android:color/white"
+        app:layout_constraintLeft_toLeftOf="@+id/idEditText"
+        app:layout_constraintTop_toBottomOf="@+id/textView19"/>
+
+    <TextView
+        android:id="@+id/textView19"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:text="ID Setup"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+        android:textColor="@android:color/white"
+        android:textStyle="bold|italic"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView5"/>
+
+    <Button
+        android:id="@+id/writeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="22dp"
+        android:background="@drawable/rounded_button"
+        android:text="Prepare To Write"
+        android:textColor="@android:color/white"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/typeSpinner"/>
+
+    <TextView
+        android:id="@+id/textView13"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="32dp"
+        android:text="Swipe tag to write the below details:"
+        android:textColor="@android:color/white"
+        app:layout_constraintHorizontal_bias="0.202"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/writeButton"/>
+
+    <TextView
+        android:id="@+id/textView14"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:text="Location ID:"
+        android:textColor="@android:color/white"
+        app:layout_constraintLeft_toLeftOf="@+id/textView13"
+        app:layout_constraintTop_toBottomOf="@+id/textView13"/>
+
+    <TextView
+        android:id="@+id/idText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="0dp"
+        android:textColor="@android:color/white"
+        app:layout_constraintLeft_toRightOf="@+id/textView14"
+        app:layout_constraintTop_toTopOf="@+id/textView14"/>
+
+    <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/hostlogo"
+        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/hostlogo"/>
+</android.support.constraint.ConstraintLayout>

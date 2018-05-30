@@ -4,4 +4,11 @@
         <item>Guest Room</item>
         <item>Floor Walk Waypoint</item>
     </string-array>
+
+    <string-array name="problems_array">
+        <item>Leaking Sink</item>
+        <item>Scuffed Skirting Board</item>
+        <item>Blown Light</item>
+        <item>Broken Glassware</item>
+    </string-array>
 </resources>

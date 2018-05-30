@@ -14,6 +14,7 @@ public class MainActivity extends Activity
 
     private Button driver2Button;
     private Button manager2Button;
+    private Button basicButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -25,6 +26,7 @@ public class MainActivity extends Activity
 
         driver2Button = (Button) findViewById(R.id.driver2Button);
         manager2Button = (Button) findViewById(R.id.manager2Button);
+        basicButton = (Button) findViewById(R.id.basicButton);
 
 
 
@@ -43,6 +45,15 @@ public class MainActivity extends Activity
             public void onClick(View v)
             {
                 startActivity(new Intent(getApplicationContext(), Manager2Activity.class));
+            }
+        });
+
+        basicButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                startActivity(new Intent(getApplicationContext(), NfcWriterActivity.class));
             }
         });
     }

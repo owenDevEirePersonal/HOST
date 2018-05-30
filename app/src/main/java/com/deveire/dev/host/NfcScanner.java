@@ -4,8 +4,11 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.nfc.NdefMessage;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.nfc.tech.Ndef;
+import android.nfc.tech.NdefFormatable;
 import android.util.Log;
 
 /**
@@ -55,6 +58,49 @@ public class NfcScanner
             }*/
         }
         return null;
+    }
+
+    public static Tag getTagObjectFromIntent(Intent intent) {
+        String action = intent.getAction();
+        if (NfcAdapter.ACTION_TAG_DISCOVERED.equals(action)) {
+
+            // In case we would still use the Tech Discovered Intent
+            Tag tag = (Tag) intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+            Log.i("NFCTEST", "tag: " + tag);
+            return tag;
+        }
+        return null;
+    }
+
+    public static void writeTag(Tag nfcTag, NdefMessage msg)
+    {
+        if(nfcTag != null)
+        {
+            try
+            {
+                Ndef ndefTag = Ndef.get(nfcTag);
+                if(ndefTag == null)
+                {
+                    NdefFormatable ndefForm = NdefFormatable.get(nfcTag);
+                    if(ndefForm != null)
+                    {
+                        ndefForm.connect();
+                        ndefForm.format(msg);
+                        ndefForm.close();
+                    }
+                }
+                else
+                {
+                    ndefTag.connect();
+                    ndefTag.writeNdefMessage(msg);
+                    ndefTag.close();
+                }
+            }
+            catch(Exception e)
+            {
+                Log.e("NFCWrite", "Failure to write NFC with exception: " + e.toString());
+            }
+        }
     }
 
 

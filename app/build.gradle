@@ -26,6 +26,11 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+
+    compile files('libs/acsbt-1.0.0preview9.jar')
+    compile files('libs/activation.jar')
+    compile files('libs/additionnal.jar')
+    compile files('libs/mail.jar')
     compile 'com.android.support:appcompat-v7:26.+'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.google.android.gms:play-services:10.2.1'
@@ -33,10 +38,5 @@ dependencies {
     compile 'com.google.android.gms:play-services-maps:10.2.1'
     compile 'com.google.code.gson:gson:2.8.0'
     compile 'com.android.support:design:26.+'
-
     testCompile 'junit:junit:4.12'
-    compile files('libs/acsbt-1.0.0preview9.jar')
-    compile files('libs/activation.jar')
-    compile files('libs/additionnal.jar')
-    compile files('libs/mail.jar')
 }

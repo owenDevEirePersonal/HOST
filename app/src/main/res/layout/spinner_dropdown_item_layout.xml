@@ -5,4 +5,5 @@
                  android:maxLines="1"
                  android:layout_width="match_parent"
                  android:layout_height="30dp"
-                 android:ellipsize="marquee" />
+                 android:ellipsize="marquee"
+                 />
