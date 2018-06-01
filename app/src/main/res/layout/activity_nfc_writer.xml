@@ -44,21 +44,16 @@
 
     <Spinner
         android:id="@+id/typeSpinner"
-        style="@style/AppSpinnerTheme"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginRight="23dp"
-        android:layout_marginTop="16dp"
         android:background="@drawable/spinner_background"
         android:contextClickable="true"
         android:elevation="24dp"
         android:overlapAnchor="false"
         android:spinnerMode="dropdown"
-        android:theme="@style/Widget.AppCompat.Light.DropDownItem.Spinner"
-        app:layout_constraintRight_toRightOf="@+id/idEditText"
-        app:layout_constraintTop_toBottomOf="@+id/textView1"
         app:layout_constraintLeft_toRightOf="@+id/spinnerPlacementFixer"
-        android:layout_marginLeft="8dp"/>
+        app:layout_constraintRight_toRightOf="@+id/idEditText"
+        app:layout_constraintTop_toBottomOf="@+id/textView1"/>
 
     <TextView
         android:id="@+id/textView1"
@@ -176,4 +171,19 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/hostlogo"/>
+
+    <Switch
+        android:id="@+id/writeUrlSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:text="Write Url       "
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:textStyle="bold|italic"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
 </android.support.constraint.ConstraintLayout>

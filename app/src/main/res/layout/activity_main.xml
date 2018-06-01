@@ -9,6 +9,22 @@
 
 
     <Button
+        android:id="@+id/webButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/rounded_button"
+        android:text="Web Based Solution"
+        android:textColor=
+            "@android:color/white"
+        map:layout_constraintHorizontal_bias="0.0"
+        map:layout_constraintLeft_toRightOf="@+id/driver2Button"
+        map:layout_constraintRight_toLeftOf="@+id/manager2Button"
+        map:layout_constraintTop_toTopOf="parent"/>
+
+    <Button
         android:id="@+id/manager2Button"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
@@ -25,14 +41,14 @@
         map:layout_constraintVertical_bias="0.523"/>
 
     <Button
-        android:id="@+id/basicButton"
+        android:id="@+id/nfcWriterButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:background="@drawable/rounded_button"
-        android:text="Web Based Solution"
+        android:text="NFC Writer"
         android:textColor=
             "@android:color/white"
         map:layout_constraintBottom_toBottomOf="parent"

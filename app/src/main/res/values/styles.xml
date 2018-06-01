@@ -22,13 +22,13 @@
     </style>
 
     <style name="spinnerItemStyle" parent="android:Widget.TextView.SpinnerItem">
-        <!-- item name="android:textColor">#ffffff</item>
-        <item name="android:background">#f24f4f</item -->
+        <item name="android:textColor">#ffffff</item>
+        <!--item name="android:background">#f24f4f</item -->
     </style>
 
     <style name="spinnerDropDownItemStyle" parent="android:TextAppearance.Widget.TextView.SpinnerItem">
-        <!-- <item name="android:textColor">#ffffff</item>
-        <item name="android:background">#f24f4f</item> -->
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:background">#f24f4f</item>
     </style>
 
     <style name="EditTextTheme" parent="Widget.AppCompat.EditText">

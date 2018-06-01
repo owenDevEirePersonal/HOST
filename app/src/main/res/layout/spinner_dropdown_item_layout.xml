@@ -4,6 +4,11 @@
                  style="@style/spinnerDropDownItemStyle"
                  android:maxLines="1"
                  android:layout_width="match_parent"
-                 android:layout_height="30dp"
+                 android:layout_height="wrap_content"
                  android:ellipsize="marquee"
+                 android:paddingBottom="8dp"
+                 android:paddingLeft="10dp"
+                 android:paddingRight="10dp"
+                 android:paddingTop="8dp"
+                 android:includeFontPadding="false"
                  />

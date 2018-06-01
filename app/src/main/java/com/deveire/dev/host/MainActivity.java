@@ -15,6 +15,7 @@ public class MainActivity extends Activity
     private Button driver2Button;
     private Button manager2Button;
     private Button basicButton;
+    private Button webButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -26,7 +27,8 @@ public class MainActivity extends Activity
 
         driver2Button = (Button) findViewById(R.id.driver2Button);
         manager2Button = (Button) findViewById(R.id.manager2Button);
-        basicButton = (Button) findViewById(R.id.basicButton);
+        basicButton = (Button) findViewById(R.id.nfcWriterButton);
+        webButton = (Button) findViewById(R.id.webButton);
 
 
 
@@ -54,6 +56,15 @@ public class MainActivity extends Activity
             public void onClick(View v)
             {
                 startActivity(new Intent(getApplicationContext(), NfcWriterActivity.class));
+            }
+        });
+
+        webButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                startActivity(new Intent(getApplicationContext(), NfcToWebActivity.class));
             }
         });
     }
